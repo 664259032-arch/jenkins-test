@@ -3,7 +3,6 @@
 // =================================================================
 
 def sendNotificationToN8n(String status, String stageName, String imageTag, String containerName, String hostPort) {
-    // ต้องติดตั้ง HTTP Request Plugin และสร้าง Secret Text ชื่อ 'n8n-webhook'
     script {
         withCredentials([string(credentialsId: 'n8n-webhook', variable: 'N8N_WEBHOOK_URL')]) {
             def payload = [
@@ -30,6 +29,7 @@ def sendNotificationToN8n(String status, String stageName, String imageTag, Stri
             }
         }
     }
+}
 
 
 pipeline {
@@ -42,7 +42,7 @@ pipeline {
     }
 
     // Environment variables
-    environment {
+    environment {     
         DOCKER_HUB_CREDENTIALS_ID = 'docker-jenkins-test'
         DOCKER_REPO               = "aomezzz007/flask-docker-app"
 
@@ -109,32 +109,6 @@ pipeline {
                             customImage.push('latest')
                         }
                     }
-                }
-            }
-        }
-
-        // Deploy to DEV (Local Docker) — สำหรับ branch develop
-        stage('Deploy to DEV (Local Docker)') {
-            when {
-                expression { params.ACTION == 'Build & Deploy' }
-                branch 'develop'
-            }
-            steps {
-                script {
-                    def deployCmd = """
-                            echo "Deploying container ${DEV_APP_NAME} from latest image..."
-                            docker pull ${DOCKER_REPO}:${env.IMAGE_TAG}
-                            docker stop ${DEV_APP_NAME} || true
-                            docker rm ${DEV_APP_NAME} || true
-                            docker run -d --name ${DEV_APP_NAME} -p ${DEV_HOST_PORT}:5000 ${DOCKER_REPO}:${env.IMAGE_TAG}
-                            docker ps --filter name=${DEV_APP_NAME} --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}"
-                        """
-                    sh deployCmd
-                }
-            }
-            post {
-                success {
-                    sendNotificationToN8n('success', 'Deploy to DEV (Local Docker)', env.IMAGE_TAG, env.DEV_APP_NAME, env.DEV_HOST_PORT)
                 }
             }
         }
