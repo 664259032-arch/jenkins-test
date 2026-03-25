@@ -1,20 +1,18 @@
-# ใช้ Official Python image เป็น base image
+# ใช้ Official Python image
 FROM python:3.13-slim
 
-# กำหนด Working Directory ภายใน Container
+# กำหนด working directory
 WORKDIR /app
 
-# Copy ไฟล์ requirements.txt เข้าไปก่อน เพื่อใช้ cache layer ของ Docker
+# ติดตั้ง dependencies
 COPY requirements.txt .
-
-# ติดตั้ง Dependencies ที่ระบุไว้
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy โค้ดทั้งหมดในโปรเจกต์เข้าไปใน container
+# Copy โค้ดทั้งหมด
 COPY . .
 
-# กำหนด Port ที่ Container จะทำงาน
+# expose port
 EXPOSE 5000
 
-# คำสั่งสำหรับรัน Flask Application
-CMD ["python", "app.py"]
+# default command
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
