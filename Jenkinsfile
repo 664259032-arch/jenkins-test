@@ -30,7 +30,7 @@ def sendNotificationToN8n(String status, String stageName, String imageTag, Stri
             }
         }
     }
-}
+
 
 pipeline {
     // ใช้ agent any เพราะ build จะทำงานบน Jenkins controller/agent (Linux)
@@ -43,8 +43,8 @@ pipeline {
 
     // Environment variables
     environment {
-        DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-cred'
-        DOCKER_REPO               = "iamsamitdev/flask-docker-app"
+        DOCKER_HUB_CREDENTIALS_ID = 'docker-jenkins-test'
+        DOCKER_REPO               = "aomezzz007/flask-docker-app"
 
         // จำลอง DEV/PROD บน Local
         DEV_APP_NAME              = "flask-app-dev"
