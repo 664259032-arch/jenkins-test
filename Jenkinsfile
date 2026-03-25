@@ -2,35 +2,35 @@
 // HELPER FUNCTION: ส่ง Notification ไปยัง n8n (ตามแนวทางของ Express Pipeline)
 // =================================================================
 
-def sendNotificationToN8n(String status, String stageName, String imageTag, String containerName, String hostPort) {
-    script {
-        withCredentials([string(credentialsId: 'n8n-webhook', variable: 'N8N_WEBHOOK_URL')]) {
-            def payload = [
-                project  : env.JOB_NAME,
-                stage    : stageName,
-                status   : status,
-                build    : env.BUILD_NUMBER,
-                image    : "${env.DOCKER_REPO}:${imageTag}",
-                container: containerName,
-                url      : "http://localhost:${hostPort}/",
-                timestamp: new Date().format("yyyy-MM-dd'T'HH:mm:ssXXX")
-            ]
-            def body = groovy.json.JsonOutput.toJson(payload)
-            try {
-                httpRequest acceptType: 'APPLICATION_JSON',
-                            contentType: 'APPLICATION_JSON',
-                            httpMode: 'POST',
-                            requestBody: body,
-                            url: N8N_WEBHOOK_URL,
-                            validResponseCodes: '200:299'
-                echo "n8n webhook (${status}) sent successfully."
-            } catch (err) {
-                echo "Failed to send n8n webhook (${status}): ${err}"
-            }
-        }
-    }
-}
-
+// ปิดการส่ง notification ไป n8n
+// def sendNotificationToN8n(String status, String stageName, String imageTag, String containerName, String hostPort) {
+//     script {
+//         withCredentials([string(credentialsId: 'n8n-webhook', variable: 'N8N_WEBHOOK_URL')]) {
+//             def payload = [
+//                 project  : env.JOB_NAME,
+//                 stage    : stageName,
+//                 status   : status,
+//                 build    : env.BUILD_NUMBER,
+//                 image    : "${env.DOCKER_REPO}:${imageTag}",
+//                 container: containerName,
+//                 url      : "http://localhost:${hostPort}/",
+//                 timestamp: new Date().format("yyyy-MM-dd'T'HH:mm:ssXXX")
+//             ]
+//             def body = groovy.json.JsonOutput.toJson(payload)
+//             try {
+//                 httpRequest acceptType: 'APPLICATION_JSON',
+//                             contentType: 'APPLICATION_JSON',
+//                             httpMode: 'POST',
+//                             requestBody: body,
+//                             url: N8N_WEBHOOK_URL,
+//                             validResponseCodes: '200:299'
+//                 echo "n8n webhook (${status}) sent successfully."
+//             } catch (err) {
+//                 echo "Failed to send n8n webhook (${status}): ${err}"
+//             }
+//         }
+//     }
+// }
 
 pipeline {
     // ใช้ agent any เพราะ build จะทำงานบน Jenkins controller/agent (Linux)
